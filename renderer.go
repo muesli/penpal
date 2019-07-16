@@ -95,7 +95,7 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 	buf := bytes.NewBuffer(b)
 
 	cp := d.countPoints()
-	for steps := uint64(0); steps < cp; steps += 20 {
+	for steps := uint64(0); steps < cp+20; steps += 20 {
 		renderDrawingMaxPoints(buf, []Drawing{d}, steps)
 
 		img, err := svgmisc.Render(buf, image.Point{d.Dimensions[1] / 20, d.Dimensions[0] / 20})
