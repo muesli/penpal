@@ -30,10 +30,8 @@ func renderDrawing(w io.Writer, d []Drawing) {
 			var opacity string
 			for i, p := range stroke.Points {
 				path += fmt.Sprintf("%.2f,%.2f ", float64(p.Position[1])/10, float64(p.Position[0])/10)
-
 				if i > 0 {
 					s.Path(path, `stroke="black" stroke-opacity="`+opacity+`" stroke-width="2" style="fill:none"`)
-
 					path = fmt.Sprintf("M%.2f,%.2f ", float64(p.Position[1])/10, float64(p.Position[0])/10)
 				}
 
