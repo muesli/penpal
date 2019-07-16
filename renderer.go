@@ -10,6 +10,7 @@ import (
 	"image/gif"
 	"image/png"
 	"io"
+	"math"
 	"os"
 
 	svg "github.com/ajstarks/svgo"
@@ -95,14 +96,17 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 	buf := bytes.NewBuffer(b)
 
 	cp := d.countPoints()
-	for steps := uint64(0); steps < cp+20; steps += 20 {
+	ss := uint64(math.Max(float64(cp)/100, 1)) // (10 seconds)
+	log.Println("Total points:", cp)
+	log.Println("Frame points:", ss)
+	for steps := uint64(0); steps < cp+ss; steps += ss {
 		renderDrawingMaxPoints(buf, []Drawing{d}, steps)
 
-		img, err := svgmisc.Render(buf, image.Point{d.Dimensions[1] / 20, d.Dimensions[0] / 20})
+		img, err := svgmisc.Render(buf, image.Point{d.Dimensions[1] / 40, d.Dimensions[0] / 40})
 		if err != nil {
 			return err
 		}
-		log.Println("Rendered frames:", steps)
+		log.Println("Rendered points:", steps)
 
 		palettedImage := image.NewPaletted(img.Bounds(), palette.WebSafe)
 		draw.Draw(palettedImage, palettedImage.Rect, img, img.Bounds().Min, draw.Over)
