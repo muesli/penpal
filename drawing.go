@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -57,6 +58,11 @@ func syncDrawings(dev dbus.ObjectPath, drawings []uint64) (string, error) {
 	dd := []Drawing{}
 	for _, drawing := range drawings {
 		data, err := fetchDrawing(dev, drawing)
+		if err != nil {
+			return "", err
+		}
+
+		err = ioutil.WriteFile(filename+".json", data, 0660)
 		if err != nil {
 			return "", err
 		}
