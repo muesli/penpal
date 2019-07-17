@@ -1,7 +1,10 @@
-# penpal
+penpal
+======
+
 A Linux daemon to sync Wacom Bamboo devices
 
 # Dependencies
+
 Make sure you have [tuhi](https://github.com/tuhiproject/tuhi/) installed and
 the tuhi daemon running.
 
