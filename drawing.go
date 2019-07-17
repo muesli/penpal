@@ -55,7 +55,7 @@ func syncDrawings(dev dbus.ObjectPath, drawings []uint64) (string, error) {
 		return "", ErrSkipExisting
 	}
 
-	dd := []Drawing{}
+	dd := []*Drawing{}
 	for _, drawing := range drawings {
 		data, err := fetchDrawing(dev, drawing)
 		if err != nil {
@@ -77,7 +77,7 @@ func syncDrawings(dev dbus.ObjectPath, drawings []uint64) (string, error) {
 			continue
 		}
 
-		dd = append(dd, d)
+		dd = append(dd, &d)
 	}
 
 	if len(dd) == 0 {

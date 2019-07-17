@@ -19,7 +19,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func renderDrawing(w io.Writer, d []Drawing) {
+func renderDrawing(w io.Writer, d []*Drawing) {
 	s := svg.New(w)
 	s.Start(d[0].Dimensions[1]/10, d[0].Dimensions[0]/10)
 	s.Rect(0, 0, d[0].Dimensions[1]/10, d[0].Dimensions[0]/10, `fill="white"`)
@@ -45,7 +45,7 @@ func renderDrawing(w io.Writer, d []Drawing) {
 	s.End()
 }
 
-func renderDrawingMaxPoints(w io.Writer, d []Drawing, max uint64) {
+func renderDrawingMaxPoints(w io.Writer, d []*Drawing, max uint64) {
 	s := svg.New(w)
 	s.Start(d[0].Dimensions[1]/10, d[0].Dimensions[0]/10)
 	s.Rect(0, 0, d[0].Dimensions[1]/10, d[0].Dimensions[0]/10, `fill="white"`)
@@ -99,8 +99,9 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 	ss := uint64(math.Max(float64(cp)/100, 1)) // (10 seconds)
 	log.Println("Total points:", cp)
 	log.Println("Frame points:", ss)
+
 	for steps := uint64(0); steps < cp+ss; steps += ss {
-		renderDrawingMaxPoints(buf, []Drawing{d}, steps)
+		renderDrawingMaxPoints(buf, []*Drawing{&d}, steps)
 
 		img, err := svgmisc.Render(buf, image.Point{d.Dimensions[1] / 40, d.Dimensions[0] / 40})
 		if err != nil {
