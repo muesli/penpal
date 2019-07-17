@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
-	"image/color/palette"
-	"image/draw"
 	"image/gif"
 	"io"
 	"math"
@@ -100,6 +98,7 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 	log.Println("Frame points:", ss)
 
 	for steps := uint64(0); steps < cp+ss; steps += ss {
+		log.Println("Rendered points:", math.Min(float64(steps), float64(cp)))
 		renderDrawingMaxPoints(buf, []*Drawing{&d}, steps)
 
 		mw := imagick.NewMagickWand()
@@ -107,7 +106,7 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 		if err != nil {
 			return err
 		}
-		err = mw.SetImageFormat("png32")
+		err = mw.SetImageFormat("gif")
 		if err != nil {
 			return err
 		}
@@ -118,18 +117,12 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 		imgd := mw.GetImageBlob()
 		mw.Destroy()
 
-		log.Println("Rendered points:", steps)
-
 		img, _, err := image.Decode(bytes.NewReader(imgd))
 		if err != nil {
 			return err
 		}
-
-		palettedImage := image.NewPaletted(img.Bounds(), palette.WebSafe)
-		draw.Draw(palettedImage, palettedImage.Rect, img, img.Bounds().Min, draw.Over)
-
-		images = append(images, palettedImage)
-		delays = append(delays, 0) //int(p.TOffset/10))
+		images = append(images, img.(*image.Paletted))
+		delays = append(delays, 0) // int(p.TOffset/10)
 
 		buf.Reset()
 	}
