@@ -22,4 +22,4 @@ directory.
 Alternatively you can start it with `-animation ID output.gif` to create a
 rendered animation of a drawing.
 
-![Rendered Animation](https://github.com/muesli/penpal/raw/master/assets/hellogithub.gif)
+![Rendered Animation](https://github.com/muesli/penpal/raw/master/assets/animation_example.gif)
