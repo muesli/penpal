@@ -5,7 +5,7 @@ A Linux daemon to sync Wacom Bamboo devices
 Make sure you have [tuhi](https://github.com/tuhiproject/tuhi/) installed and
 the tuhi daemon running.
 
-You will also need librsvg and its development headers to compile `penpal`.
+You will also need ImageMagick 7 and its development headers to compile `penpal`.
 
 Pair your Bamboo device via Bluetooth and link it to tuhi, as described in their
 README.

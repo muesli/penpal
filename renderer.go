@@ -8,15 +8,14 @@ import (
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
-	"image/png"
 	"io"
 	"math"
 	"os"
 
 	svg "github.com/ajstarks/svgo"
 	"github.com/godbus/dbus"
-	svgmisc "github.com/rogpeppe/misc/svg"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/gographics/imagick.v3/imagick"
 )
 
 func renderDrawing(w io.Writer, d []*Drawing) {
@@ -103,11 +102,28 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 	for steps := uint64(0); steps < cp+ss; steps += ss {
 		renderDrawingMaxPoints(buf, []*Drawing{&d}, steps)
 
-		img, err := svgmisc.Render(buf, image.Point{d.Dimensions[1] / 40, d.Dimensions[0] / 40})
+		mw := imagick.NewMagickWand()
+		err := mw.ReadImageBlob(buf.Bytes())
 		if err != nil {
 			return err
 		}
+		err = mw.SetImageFormat("png32")
+		if err != nil {
+			return err
+		}
+		err = mw.ResizeImage(uint(d.Dimensions[1]/20), uint(d.Dimensions[0]/20), imagick.FILTER_LANCZOS)
+		if err != nil {
+			return err
+		}
+		imgd := mw.GetImageBlob()
+		mw.Destroy()
+
 		log.Println("Rendered points:", steps)
+
+		img, _, err := image.Decode(bytes.NewReader(imgd))
+		if err != nil {
+			return err
+		}
 
 		palettedImage := image.NewPaletted(img.Bounds(), palette.WebSafe)
 		draw.Draw(palettedImage, palettedImage.Rect, img, img.Bounds().Min, draw.Over)
@@ -132,7 +148,14 @@ func renderSVGPNG(in string, out string, size image.Point) error {
 	}
 	defer f.Close()
 
-	img, err := svgmisc.Render(f, size)
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
+
+	err = mw.ReadImageFile(f)
+	if err != nil {
+		return err
+	}
+	err = mw.SetImageFormat("png32")
 	if err != nil {
 		return err
 	}
@@ -141,15 +164,11 @@ func renderSVGPNG(in string, out string, size image.Point) error {
 	if err != nil {
 		return err
 	}
-
-	if err := png.Encode(fpng, img); err != nil {
+	err = mw.WriteImageFile(fpng)
+	if err != nil {
 		fpng.Close()
 		return err
 	}
 
-	if err := fpng.Close(); err != nil {
-		return err
-	}
-
-	return nil
+	return fpng.Close()
 }

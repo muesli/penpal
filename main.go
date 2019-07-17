@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"gopkg.in/gographics/imagick.v3/imagick"
+
 	"github.com/godbus/dbus"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,6 +18,8 @@ var (
 )
 
 func main() {
+	imagick.Initialize()
+	defer imagick.Terminate()
 	flag.Parse()
 
 	var err error
