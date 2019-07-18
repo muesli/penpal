@@ -114,13 +114,12 @@ func renderAnimation(w io.Writer, dev dbus.ObjectPath, drawing uint64) error {
 		if err != nil {
 			return err
 		}
-		imgd := mw.GetImageBlob()
-		mw.Destroy()
-
-		img, _, err := image.Decode(bytes.NewReader(imgd))
+		img, _, err := image.Decode(bytes.NewReader(mw.GetImageBlob()))
 		if err != nil {
 			return err
 		}
+		mw.Destroy()
+
 		images = append(images, img.(*image.Paletted))
 		delays = append(delays, 0) // int(p.TOffset/10)
 
