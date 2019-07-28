@@ -39,7 +39,7 @@ func main() {
 
 	if *animation > 0 {
 		if len(os.Args) < 4 {
-			log.Fatal("Usage: -animate ID output.gif")
+			log.Fatal("Usage: -animation ID output.gif")
 		}
 
 		drawings, err := findDrawings(devs[0])
